@@ -51,6 +51,24 @@ a   { color: inherit; text-decoration: none; }
 button { cursor: pointer; border: none; background: none; font-family: var(--font-body); }
 ul, ol { list-style: none; }
 
+/* ── LOADING SCREEN: CSS-ONLY auto-hide fallback ─────────────── */
+/* If JS fails to hide the loading screen, this animation forces it
+   hidden after 4s so the hero content is never permanently blocked. */
+#loading-screen {
+  animation: loading-auto-hide 0.5s ease 4s forwards;
+}
+#loading-screen.hidden,
+#loading-screen.gone {
+  animation: none !important;
+}
+@keyframes loading-auto-hide {
+  to {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
 /* ── NOISE TEXTURE ───────────────────────────────────────────── */
 .noise-overlay {
   position: fixed;
@@ -88,9 +106,8 @@ ul, ol { list-style: none; }
 }
 
 /* ── HERO CONTENT: ALWAYS VISIBLE (nuclear override) ─────────── */
-/* Hero elements may have .reveal class. These rules override .reveal
-   so hero is ALWAYS visible regardless of JS timing. */
-.hero .reveal,
+/* Hero elements no longer have .reveal class (removed from HTML).
+   !important rules guarantee visibility regardless of any other CSS. */
 .hero *,
 .hero-content,
 .hero-eyebrow,
