@@ -1792,16 +1792,20 @@ async function waitForFirebaseAndInit() {
 function boot() {
   initNavbarScroll();
 
-  // BUG FIX: Hero reveals are handled by hideLoadingScreen() in index.html.
-  // For extra safety, also force hero elements visible here after a short delay
-  // in case the loading screen script already ran before app.js loaded.
-  setTimeout(function() {
-    document.querySelectorAll('.hero .reveal, .hero-content > *').forEach(function(el) {
+  // FIX: Force hero content visible immediately — don't wait for scroll observer.
+  // The CSS already has .hero * { opacity: 1 !important } but we also call this
+  // here defensively so any .reveal elements inside hero get .visible right away.
+  (function forceHeroVisible() {
+    var heroEls = document.querySelectorAll('.hero .reveal, .hero-content, .hero-eyebrow, .hero-headline, .hero-sub, .hero-actions, .hero-logo-wrap, .hero-badge');
+    heroEls.forEach(function(el) {
       el.classList.add('visible');
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+      el.style.visibility = 'visible';
     });
-  }, 500);
+  })();
 
-  // Observe non-hero below-fold sections after hero is safe
+  // Only observe below-fold sections (menu, about, footer) after a safe delay.
   setTimeout(function() {
     var belowFoldSections = document.querySelectorAll(
       '.menu-section .reveal, .about-section .reveal, .footer .reveal'
@@ -1811,7 +1815,7 @@ function boot() {
         observeRevealElements(el.closest('section') || el.parentElement);
       }
     });
-  }, 2000);
+  }, 2500);
 
   initLazyImages(null);
   triggerAnimations(null);
